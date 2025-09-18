@@ -1,134 +1,71 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../AuthSlice";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const Login = () => {
-  const [userName, setUserName] = useState("");
-  const [password, setPassword] = useState("");
-  const [agree, setAgree] = useState(false);
-
-  // errors
-  const [userNameError, setUserNameError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [agreeError, setAgreeError] = useState("");
-
+const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error, token } = useSelector((state) => state.auth);
+  const { loading, error, accessCode } = useSelector((state) => state.auth);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
 
-    let valid = true;
+  const handleLogin = async () => {
+  try {
+    const resultAction = await dispatch(
+      loginUser({ userName, password, origin: "AGENT" })
+    );
 
-    if (!userName.trim()) {
-      setUserNameError("Enter valid username");
-      valid = false;
-    } else setUserNameError("");
+    // ✅ Check if login was successful
+    if (loginUser.fulfilled.match(resultAction)) {
+      // API response is in resultAction.payload
+      const { accessCode, opaque } = resultAction.payload.data;
 
-    if (!password.trim()) {
-      setPasswordError("Enter your password");
-      valid = false;
-    } else setPasswordError("");
+      // ✅ Store values in localStorage
+      localStorage.setItem("accessCode", accessCode);
+      localStorage.setItem("opaque", opaque);
 
-    if (!agree) {
-      setAgreeError("You must agree to conditions");
-      valid = false;
-    } else setAgreeError("");
+      // ✅ Navigate to OTP page
+      navigate("/verify");
+    } else {
+      // Login failed, show error
+      console.error("Login failed:", resultAction.payload || resultAction.error);
+    }
+  } catch (err) {
+    console.error("Unexpected error during login:", err);
+  }
+};
 
-    if (!valid) return;
-
-    dispatch(loginUser({ userName, password }));
-  };
-
-  useEffect(() => {
-    if (token) navigate("/home");
-  }, [token, navigate]);
-
-  const inputStyle = {
-    width: "80%",
-    height: "30px",
-    border: "2px solid #ccc",
-    borderRadius: "9px",
-    paddingInline: "9px",
-    marginLeft: "10px",
-  };
-  const btnStyle = {
-    width: "100px",
-    height: "35px",
-    alignSelf: "center",
-    border: "3px solid #888",
-    borderRadius: "9px",
-  };
-  const errorStyle = {
-    color: "red",
-    marginLeft: "30px",
-  };
 
   return (
-    <div
-      style={{
-        width: "400px",
-        background: "#ccc",
-        float: "right",
-        margin: "100px 100px",
-        padding: "20px",
-        border: "2px solid",
-        borderRadius: "20px",
-      }}
-    >
-      <h2 style={{ textAlign: "center" }}>Login</h2>
+    <div style={{ padding: "20px", textAlign: "center" }}>
+      <h2>Login</h2>
+      <input
+        type="text"
+        placeholder="Username"
+        value={userName}
+        onChange={(e) => setUserName(e.target.value)}
+      />
+      <br />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <br />
+      <button onClick={handleLogin} disabled={loading}>
+        {loading ? "Logging in..." : "Login"}
+      </button>
 
-      <form
-        onSubmit={handleSubmit}
-        style={{ display: "flex", flexDirection: "column", gap: "8px" }}
-      >
-        <label>UserName</label>
-        <input
-          type="text"
-          placeholder="Username"
-          value={userName}
-          onChange={(e) => setUserName(e.target.value)}
-          style={inputStyle}
-        />
-        {userNameError && <span style={errorStyle}>{userNameError}</span>}
+      {accessCode && (
+        <p style={{ color: "blue" }}>Mock OTP: {accessCode}</p>
+      )}
 
-        <label>Password</label>
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={inputStyle}
-        />
-        {passwordError && <span style={errorStyle}>{passwordError}</span>}
-
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <input
-            type="checkbox"
-            id="agree"
-            checked={agree}
-            onChange={(e) => setAgree(e.target.checked)}
-          />
-          <label htmlFor="agree">Terms and conditions</label>
-        </div>
-        {agreeError && <span style={errorStyle}>{agreeError}</span>}
-
-        {error && <span style={errorStyle}>{error}</span>}
-        <button style={btnStyle} type="submit" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
-        </button>
-
-        <Link
-          to="/verifyotp"
-          style={{ textAlign: "center", textDecoration: "none" }}
-        >
-          Verify-Otp
-        </Link>
-      </form>
+      {error && <p style={{ color: "red" }}>{error?.message || error}</p>}
     </div>
   );
 };
 
-export default Login;
+export default LoginPage;

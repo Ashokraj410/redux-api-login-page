@@ -1,23 +1,23 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./Components/Login/Login";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
+import LoginPage from "./Components/Login/Login";
+import VerifyOtpPage from "./Components/ValidationCode/VerifyOtpPage";
 import Home from "./Components/Home/Home";
-import PrivateRoute from "./Components/PrivateRoute/PrivateRoute";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { VerifyOtp } from "./Components/VerifyOtp/VerifyOtp";
+import VerifyPage from "./Components/ValidationCode/VerifyPage";
 
-function App() {
+const App = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
-        <Route path="verifyotp" element={<VerifyOtp/>}/>
-      </Routes>
-      <ToastContainer position="top-right" autoClose={3000} />
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/verifyotp" element={<VerifyOtpPage />} />
+      <Route path="/home" element={<Home />} />
+      <Route path="*" element={<LoginPage />} />
+      <Route path="/verify" element={<VerifyPage />} />
+
+    </Routes>
     </BrowserRouter>
   );
-}
+};
 
 export default App;
