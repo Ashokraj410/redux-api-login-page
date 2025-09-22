@@ -1,109 +1,99 @@
-import React, { useState, useEffect } from "react";
+import  { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { resendOtpApi, verifyOtpApi } from '../../Api/axiosInstance';
+import { verifyOtp} from "../../AuthSlice";
 
-const VerifyPage = () => {
- const dispatch = useDispatch();
+export default function VerifyPage() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, loading, error, otpMessage, accessCode } = useSelector(
-    (state) => state.auth
+
+  const { accessCode, error, otpMessage } = useSelector((state) => state.auth);
+
+  const [inputOtp, setInputOtp] = useState("");
+  const [timeLeft, setTimeLeft] = useState(
+    parseInt(localStorage.getItem("expiry")) || 100
+  );
+  const [storedAccessCode, setStoredAccessCode] = useState(
+    localStorage.getItem("accessCode")
   );
 
-  const [otp, setOtp] = useState("");
-  const [timer, setTimer] = useState(100);
-
- 
-
+  // countdown timer
   useEffect(() => {
-    if (timer > 0) {
-      const interval = setInterval(() => setTimer((t) => t - 1), 1000);
-      return () => clearInterval(interval);
+    if (timeLeft <= 0) return;
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
+  // update OTP when Redux changes
+  useEffect(() => {
+    if (accessCode) {
+      setStoredAccessCode(accessCode);
+      localStorage.setItem("accessCode", accessCode);
+      setTimeLeft(100); // reset timer on new OTP
     }
-  }, [timer]);
+  }, [accessCode]);
 
-  const handleChange = (e) => {
-    const value = e.target.value;
-    if (/^\d*$/.test(value)) setOtp(value); // only allow digits
-  };
+  const handleVerify = async () => {
+    try {
+      const result = await dispatch(
+        verifyOtp({ accessCode: inputOtp }) // payload to backend
+      ).unwrap();
 
-  const handleVerify = (e) => {
-    e.preventDefault();
-    if (!otp || otp.length < 4) return; // basic validation
-    dispatch(verifyOtpApi({ otp, userId: user?.id || user?.userId }))
-      .unwrap()
-      .then(() => navigate("/home", { replace: true }))
-      .catch((err) => console.error("OTP verify failed:", err));
-  };
-
-  const handleResend = () => {
-    if ((user?.id || user?.userId) && timer === 0) {
-      dispatch(resendOtpApi(user.id || user.userId));
-      setTimer(100);
+      alert("OTP Verified Successfully!");
+      navigate("/home");
+    } catch (err) {
+      console.error("OTP Verification Failed:", err);
+      alert("Invalid OTP. Try again.");
     }
   };
+
 
   return (
-    <div style={{ maxWidth: "400px", margin: "0 auto", paddingTop: "20px" }}>
-      <form
-        onSubmit={handleVerify}
+    <div style={{ maxWidth: "400px", margin: "50px auto", textAlign: "center" }}>
+      <div
         style={{
           border: "1px solid #ccc",
-          padding: "20px",
           borderRadius: "8px",
-          textAlign: "center",
+          padding: "16px",
+          marginBottom: "20px",
+          background: "#f0f8ff",
         }}
       >
-        <h2>Verify OTP</h2>
-
-        {process.env.NODE_ENV === "development" && accessCode && (
-          <p style={{ color: "blue", fontWeight: "bold" }}>
-            Mock OTP: {accessCode}
-          </p>
-        )}
+        <h3>Message</h3>
+        <p>
+          Your OTP:{" "}
+          <strong>{storedAccessCode || "Waiting for OTP..."}</strong>
+        </p>
+        <p>Expires in: {timeLeft}s</p>
 
         <input
           type="text"
-          value={otp}
-          onChange={handleChange}
           placeholder="Enter OTP"
-          autoFocus
-          style={{
-            fontSize: "18px",
-            padding: "8px",
-            marginBottom: "12px",
-            textAlign: "center",
-            width: "100%",
-          }}
+          value={inputOtp}
+          onChange={(e) => setInputOtp(e.target.value)}
+          style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
         />
-        <br />
-        <button type="submit" disabled={loading || !otp}>
-          {loading ? "Verifying..." : "Verify"}
+
+        <button
+          onClick={handleVerify}
+          style={{
+            width: "100%",
+            padding: "10px",
+            background: "#4caf50",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            marginBottom: "10px",
+          }}
+        >
+          Verify
         </button>
 
-        <div style={{ marginTop: "12px" }}>
-          {timer > 0 ? (
-            <p>Resend OTP in {timer}s</p>
-          ) : (
-            <button type="button" onClick={handleResend} disabled={loading}>
-              Resend OTP
-            </button>
-          )}
-        </div>
-
-        {otpMessage && timer === 30 && (
-          <p style={{ color: "green" }}>{otpMessage}</p>
-        )}
-        {error && (
-          <p style={{ color: "red" }}>
-            {typeof error === "string" ? error : error.message || "Error"}
-          </p>
-        )}
-      </form>
+        {error && <p style={{ color: "red" }}>{error.message || error}</p>}
+        {otpMessage && <p style={{ color: "green" }}>{otpMessage}</p>}
+      </div>
     </div>
   );
-};
-
-
-
-export default VerifyPage
+}

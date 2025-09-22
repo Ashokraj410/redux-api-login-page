@@ -2,68 +2,142 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../AuthSlice";
 import { useNavigate } from "react-router-dom";
+import Toasting from "../Toast/Toasting";
 
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error, accessCode } = useSelector((state) => state.auth);
+
+  const { loading } = useSelector((state) => state.auth);
 
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async () => {
-  try {
-    const resultAction = await dispatch(
-      loginUser({ userName, password, origin: "AGENT" })
-    );
+  const [userNameError, setUserNameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
-    // ✅ Check if login was successful
-    if (loginUser.fulfilled.match(resultAction)) {
-      // API response is in resultAction.payload
-      const { accessCode, opaque } = resultAction.payload.data;
+  const [toastmsg, setToastMsg] = useState("");
+  const [toasttype, setToastType] = useState("");
 
-      // ✅ Store values in localStorage
-      localStorage.setItem("accessCode", accessCode);
-      localStorage.setItem("opaque", opaque);
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-      // ✅ Navigate to OTP page
-      navigate("/verify");
-    } else {
-      // Login failed, show error
-      console.error("Login failed:", resultAction.payload || resultAction.error);
+    if (!userName) {
+      setUserNameError("Please enter Username");
+      return;
     }
-  } catch (err) {
-    console.error("Unexpected error during login:", err);
-  }
-};
+    if (!password) {
+      setPasswordError("Please enter Password");
+      return;
+    }
 
+    try {
+      const result = await dispatch(
+        loginUser({ userName, password, origin: "AGENT" })
+      );
+
+      if (loginUser.fulfilled.match(result)) {
+        setToastMsg("login Successfully!")
+        setToastType("success")
+        setTimeout(()=>{
+          navigate("/verify")
+
+        },5000)
+        ;
+      } else {
+        const apiError = result.payload || result.error;
+        setToastMsg(apiError.message || "Login failed!");
+        setToastType("error");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setToastMsg("Something went wrong.");
+      setToastType("error");
+    }
+  };
 
   return (
-    <div style={{ padding: "20px", textAlign: "center" }}>
-      <h2>Login</h2>
-      <input
-        type="text"
-        placeholder="Username"
-        value={userName}
-        onChange={(e) => setUserName(e.target.value)}
-      />
-      <br />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <br />
-      <button onClick={handleLogin} disabled={loading}>
-        {loading ? "Logging in..." : "Login"}
-      </button>
+    <div
+      style={{
+        padding: "20px",
+        width: "380px",
+        background: "#ccc",
+        borderRadius: "30px",
+        float: "right",
+        margin: "240px 100px",
+      }}
+    >
+      <h2 style={{ textAlign: "center" }}>Login</h2>
+      <form
+        style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+        onSubmit={handleLogin}
+      >
+        <label>UserName</label>
+        <input
+          style={{
+            width: "90%",
+            height: "30px",
+            border: "2px solid #ccc",
+            outline: "none",
+            borderRadius: "10px",
+            paddingInline: "10px",
+            alignSelf: "center",
+          }}
+          type="text"
+          placeholder="Username"
+          value={userName}
+          onChange={(e) => {
+            setUserName(e.target.value);
+            if (e.target.value.trim() !== "") setUserNameError("");
+          }}
+        />
+        {userNameError && <span style={{ color: "red" }}>{userNameError}</span>}
 
-      {accessCode && (
-        <p style={{ color: "blue" }}>Mock OTP: {accessCode}</p>
-      )}
+        <label>Password</label>
+        <input
+          style={{
+            width: "90%",
+            height: "30px",
+            border: "2px solid #ccc",
+            outline: "none",
+            borderRadius: "10px",
+            paddingInline: "10px",
+            alignSelf: "center",
+          }}
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            if (e.target.value.trim() !== "") setPasswordError("");
+          }}
+        />
+        {passwordError && <span style={{ color: "red" }}>{passwordError}</span>}
 
-      {error && <p style={{ color: "red" }}>{error?.message || error}</p>}
+        <button
+          style={{
+            width: "40%",
+            alignSelf: "center",
+            height: "35px",
+            cursor: "pointer",
+            borderRadius: "10px",
+            border: "none",
+            background: "#1976d2",
+            color: "#fff",
+            fontWeight: "bold",
+          }}
+          type="submit"
+          disabled={loading}
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
+
+        <Toasting
+          message={toastmsg}
+          type={toasttype}
+          onClose={() => setToastMsg("")}
+        />
+      </form>
     </div>
   );
 };

@@ -1,70 +1,50 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { loginApi, verifyOtpApi, resendOtpApi } from "./Api/axiosInstance"; // adjust path
+import { loginApi, verifyOtpApi } from "./Api/axiosInstance";
 
 // Login
 export const loginUser = createAsyncThunk(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
     try {
-      const data = await loginApi(credentials);
-      return data; // { user: {...}, accessCode: '123456', token: '...' }
+      const response = await loginApi(credentials);
+      return response.data; // ✅ backend wraps inside .data
     } catch (err) {
-      if (err.response) return rejectWithValue(err.response.data);
-      if (err.request) return rejectWithValue({ message: "Network Error" });
-      return rejectWithValue({ message: err.message });
+      return rejectWithValue(err.response?.data || { message: err.message });
     }
   }
 );
 
 // Verify OTP
 export const verifyOtp = createAsyncThunk(
-  "/auth/aceess-code/validate",
+  "auth/verifyOtp",
   async (otpData, { rejectWithValue }) => {
     try {
-      const data = await verifyOtpApi(otpData);
-      return data;
+      const response = await verifyOtpApi(otpData);
+      return response;
     } catch (err) {
-      if (err.response) return rejectWithValue(err.response.data);
-      if (err.request) return rejectWithValue({ message: "Network Error" });
-      return rejectWithValue({ message: err.message });
+      return rejectWithValue(err.response?.data || { message: err.message });
     }
   }
 );
 
-// Resend OTP
-export const resendOtp = createAsyncThunk(
-  "auth/resendOtp",
-  async (userId, { rejectWithValue }) => {
-    try {
-      const data = await resendOtpApi(userId);
-      return data;
-    } catch (err) {
-      if (err.response) return rejectWithValue(err.response.data);
-      if (err.request) return rejectWithValue({ message: "Network Error" });
-      return rejectWithValue({ message: err.message });
-    }
-  }
-);
+
 
 const authSlice = createSlice({
   name: "auth",
   initialState: {
     loading: false,
     user: null,
-    error: null,
-    otpMessage: null,
-    accessCode: null,
     token: localStorage.getItem("token") || null,
+    accessCode: localStorage.getItem("accessCode") || null,
+    otpMessage: null,
+    error: null,
   },
   reducers: {
     logout: (state) => {
       state.user = null;
-      state.error = null;
-      state.otpMessage = null;
-      state.accessCode = null;
       state.token = null;
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
+      state.accessCode = null;
+      localStorage.clear();
     },
   },
   extraReducers: (builder) => {
@@ -76,12 +56,20 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
+        state.user = action.payload.user || null;
+        state.token = action.payload.jwt;
         state.accessCode = action.payload.accessCode;
-        state.token = action.payload.token;
-        localStorage.setItem("user", JSON.stringify(action.payload.user));
-        localStorage.setItem("token", action.payload.token);
+
+        // Save to localStorage
+        localStorage.setItem("token", action.payload.jwt);
+        localStorage.setItem("accessCode", action.payload.accessCode);
+        localStorage.setItem("opaque", action.payload.opaque);
+
+        // Save expiry as absolute timestamp
+        const expiryTime = Date.now() + action.payload.accessExpiryInSecond * 1000;
+        localStorage.setItem("expiry", expiryTime.toString());
       })
+
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
@@ -94,21 +82,15 @@ const authSlice = createSlice({
       })
       .addCase(verifyOtp.fulfilled, (state, action) => {
         state.loading = false;
-        state.otpMessage = action.payload.message;
-        state.accessCode = null; // clear OTP after verification
+        state.otpMessage = action.payload.message || "OTP Verified!";
+        state.accessCode = null; // clear OTP after success
       })
       .addCase(verifyOtp.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // Resend OTP
-      .addCase(resendOtp.fulfilled, (state, action) => {
-        state.otpMessage = action.payload.message;
-      })
-      .addCase(resendOtp.rejected, (state, action) => {
-        state.error = action.payload;
-      });
+      
   },
 });
 
