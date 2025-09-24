@@ -43,7 +43,6 @@ const LoginPage = () => {
           navigate("/verify")
 
         },5000)
-        ;
       } else {
         const apiError = result.payload || result.error;
         setToastMsg(apiError.message || "Login failed!");

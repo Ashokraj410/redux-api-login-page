@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "https://91.203.132.120/staging/app";
+const BASE_URL = "https://hastin-container.com/staging/app";
 
 export const loginApi = async (credentials) => {
   const response = await axios.post(`${BASE_URL}/auth/login`, credentials, {
@@ -11,7 +11,6 @@ export const loginApi = async (credentials) => {
   });
   return response.data;
 };
-
 
 // Verify OTP API
 export const verifyOtpApi = async (otpData) => {

@@ -2,6 +2,7 @@ import  { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { verifyOtp} from "../../AuthSlice";
+import "./otp.css"
 
 export default function VerifyPage() {
   const dispatch = useDispatch();
@@ -51,15 +52,8 @@ export default function VerifyPage() {
 
 
   return (
-    <div style={{ maxWidth: "400px", margin: "50px auto", textAlign: "center" }}>
-      <div
-        style={{
-          border: "1px solid #ccc",
-          borderRadius: "8px",
-          padding: "16px",
-          marginBottom: "20px",
-          background: "#f0f8ff",
-        }}
+    <div className="container">
+      <div className="con-main"
       >
         <h3>Message</h3>
         <p>

@@ -3,13 +3,7 @@
     padding: 0;
     box-sizing: border-box;
 }
-
-
 body{
-    background-image: url(/src/assets/back.jpg);
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
     width: 100vw;
     height: 100vh;
 }

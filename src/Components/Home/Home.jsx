@@ -1,8 +1,17 @@
 import React from 'react'
+import Navbar from '../Navbar/Navbar'
+import { Outlet } from 'react-router-dom'
+import ListNavbar from '../Navbar/ListNavbar'
 
 const Home = () => {
   return (
-    <div>Home</div>
+    <div>
+      <Navbar />
+      <ListNavbar/>
+      <div>
+        <Outlet />
+      </div>
+    </div>
   )
 }
 
