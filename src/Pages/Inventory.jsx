@@ -1,79 +1,98 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Plus, Search } from 'lucide-react'
-import "./inven.css"
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchContainerRequest,
+  deleteContainerRequest,
+} from "../Components/Actions/Action";
+import ContainerForm from "../Components/Form/ContainerForm";
+import "./inven.css"; 
 
+const InventoryPage = () => {
+  const dispatch = useDispatch();
+  const { items, loading, error } = useSelector((state) => state);
+  console.log(items)
 
+  const [showForm, setShowForm] = useState(false);
+  const [editItem, setEditItem] = useState(null);
 
-const Inventory = () => {
+  useEffect(() => {
+    dispatch(fetchContainerRequest());
+  }, [dispatch]);
+
   return (
-    <div className='main'>
-      <div>
-      <div style={{margin:"7px 56px",display:"flex",float:"right"}}>
-        <div className='main-input'>
-          <Search color='#d6e' />
-          <input type="text" placeholder='Search...container No/current Location/Grade'  className= "main-searchbox" />
-        </div>
-        <div  className='add'>
-          <Plus color='black'/>
-          <h6>Add container</h6>
-        </div>
-      </div>
-      </div>
-      <div style={{marginTop:"10px",alignSelf:"center"}}>
+    <div className="inventory-container">
+      <h2 className="inventory-title">Container</h2>
+      <button
+        onClick={() => {
+          setEditItem(null);
+          setShowForm(true);
+        }}
+        className="add-container-btn"
+      >
+        + Add Container
+      </button>
+
+      {loading && <p>Loading...</p>}
+      {error && <p className="text-red-500">{error}</p>}
+
+      <div className="table-container">
         <table>
           <thead>
             <tr>
               <th>Container No</th>
               <th>Container Type</th>
               <th>Product Type</th>
-              <th>Current Location</th>
-              <th>Current Depot</th>
+              <th>Location</th>
               <th>Principal</th>
-              <th>Yorm</th>
-              <th>Max.Gross.Weight</th>
-              <th>Tare Weight</th>
+              <th>Gross Weight</th>
               <th>Grade</th>
               <th>Note</th>
-              <th>On Hire Date</th>
-              <th>ON Hire Location</th>
+              <th>Hire Date</th>
+              <th>Hire Location</th>
+              <th>Actions</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-            </tr>
-            <tr>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-              <td>1234</td>
-            </tr>
-          </tbody>
+          {/* <tbody>
+            {items.map((inv) => (
+              <tr key={inv.id}>
+                <td>{inv.containerNo}</td>
+                <td>{inv.containerType}</td>
+                <td>{inv.productType}</td>
+                <td>{inv.currentLocation}</td>
+                <td>{inv.principal}</td>
+                <td>{inv.maxGrossWeight}</td>
+                <td>{inv.grade}</td>
+                <td>{inv.note}</td>
+                <td>{inv.onHireDate}</td>
+                <td>{inv.onHireLocation}</td>
+                <td>
+                  <button
+                    onClick={() => {
+                      setEditItem(inv);
+                      setShowForm(true);
+                    }}
+                    className="edit-btn"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => dispatch(deleteContainerRequest(inv.id))}
+                    className="delete-btn"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody> */}
         </table>
       </div>
-    </div>
-  )
-}
 
-export default Inventory
+      {showForm && (
+        <ContainerForm onClose={() => setShowForm(false)} editItem={editItem} />
+      )}
+    </div>
+  );
+};
+
+export default InventoryPage;
