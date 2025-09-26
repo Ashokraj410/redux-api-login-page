@@ -1,7 +1,7 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { verifyOtp} from "../../AuthSlice";
+import { verifyOtp } from "../../AuthSlice";
 import "./otp.css"
 
 export default function VerifyPage() {
@@ -41,9 +41,9 @@ export default function VerifyPage() {
       const result = await dispatch(
         verifyOtp({ accessCode: inputOtp }) // payload to backend
       ).unwrap();
-
-      alert("OTP Verified Successfully!");
-      navigate("/home");
+        alert("OTP Verified Successfully!");
+        navigate("/home");
+      
     } catch (err) {
       console.error("OTP Verification Failed:", err);
       alert("Invalid OTP. Try again.");

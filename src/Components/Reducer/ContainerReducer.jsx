@@ -23,7 +23,13 @@ const containerReducer = (state = initialState, action) => {
             return { ...state, loading: true };
 
         case FETCH_CONTAINER_SUCCESS:
-            return { ...state, loading: false, items: action.payload };
+            const tableData=action.payload?.data?.tableData;
+    return { 
+        ...state, 
+        loading: false, 
+        items: Array.isArray(tableData)?tableData: [] 
+    };
+
 
         case ADD_CONTAINER_SUCCESS:
             return { ...state, loading: false, items: [...state.items, action.payload] };

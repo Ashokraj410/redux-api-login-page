@@ -33,11 +33,12 @@ export const verifyOtpApi = async (otpData) => {
   return response.data;
 };
 
+  
  export const containerApi = axios.create({
-  // baseURL: BASE_URL,
+   base_URL:"https://hastin-container.com/staging",
   headers: {
     "Content-Type": "application/json",
-    "Aid ": "86f15c81-66d3-4237-bb29-6c4e7a9daacf",
+    "Aid":"86f15c81-66d3-4237-bb29-6c4e7a9daacf",
   },
 });
 

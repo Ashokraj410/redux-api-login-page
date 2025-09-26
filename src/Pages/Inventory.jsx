@@ -5,12 +5,11 @@ import {
   deleteContainerRequest,
 } from "../Components/Actions/Action";
 import ContainerForm from "../Components/Form/ContainerForm";
-import "./inven.css"; 
+import "./inven.css";
 
 const InventoryPage = () => {
   const dispatch = useDispatch();
-  const { items, loading, error } = useSelector((state) => state);
-  console.log(items)
+  const { items = [], loading, error } = useSelector((state) => state.container);
 
   const [showForm, setShowForm] = useState(false);
   const [editItem, setEditItem] = useState(null);
@@ -18,6 +17,10 @@ const InventoryPage = () => {
   useEffect(() => {
     dispatch(fetchContainerRequest());
   }, [dispatch]);
+
+
+
+
 
   return (
     <div className="inventory-container">
@@ -52,39 +55,34 @@ const InventoryPage = () => {
               <th>Actions</th>
             </tr>
           </thead>
-          {/* <tbody>
-            {items.map((inv) => (
-              <tr key={inv.id}>
-                <td>{inv.containerNo}</td>
-                <td>{inv.containerType}</td>
-                <td>{inv.productType}</td>
-                <td>{inv.currentLocation}</td>
-                <td>{inv.principal}</td>
-                <td>{inv.maxGrossWeight}</td>
-                <td>{inv.grade}</td>
-                <td>{inv.note}</td>
-                <td>{inv.onHireDate}</td>
-                <td>{inv.onHireLocation}</td>
-                <td>
-                  <button
-                    onClick={() => {
-                      setEditItem(inv);
-                      setShowForm(true);
-                    }}
-                    className="edit-btn"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => dispatch(deleteContainerRequest(inv.id))}
-                    className="delete-btn"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody> */}
+
+         <tbody>
+  {items.length > 0 ? (
+    items.map((inv) => (
+      <tr key={`${inv.containerNo}-${inv.productType}`}>
+        <td>{inv.containerNo}</td>
+        <td>{inv.containerType}</td>
+        <td>{inv.productType}</td>
+        <td>{inv.currentLocation}</td>
+        <td>{inv.principal}</td>
+        <td>{inv.maxGrossWeight}</td>
+        <td>{inv.grade}</td>
+        <td>{inv.note}</td>
+        <td>{inv.onHireDate}</td>
+        <td>{inv.onHireLocation}</td>
+        <td>
+          <button onClick={() => { setEditItem(inv); setShowForm(true); }}>Edit</button>
+          <button onClick={() => dispatch(deleteContainerRequest(inv.id))}>Delete</button>
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="11" style={{ textAlign: "center" }}>No containers found</td>
+    </tr>
+  )}
+</tbody>
+
         </table>
       </div>
 

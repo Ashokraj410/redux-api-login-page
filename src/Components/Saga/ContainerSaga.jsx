@@ -11,36 +11,41 @@ import {containerApi }from '../../Api/axiosInstance'
 
 
 const ACTIVE_URL = "https://hastin-container.com/staging/api/container/search/ACTIVE"; 
-const ADD_URL = "/api/container-group/get";
-const UPDATE_URL = "/api/container/update";
-const DELETE_URL = "/api/container"; // DELETE /container/:id
+const ADD_URL = "https://hastin-container.com/staging/api/container-group/get";
+const UPDATE_URL = "https://hastin-container.com/staging/api/container/update";
+const DELETE_URL = "https://hastin-container.com/staging/api/container"; // DELETE /container/:id
 
 // Fetch containers
 function* fetchContainer(action) {
   try {
-        const datas =action.payload;
-    console.log(datas)
+    const requestData = {
+      pagination: {
+        index: 1,
+        rowCount: -1,
+        searchObj: null,
+        sortingObj: null,
+      },
+    };
 
+    const response = yield call(containerApi.put, ACTIVE_URL, requestData);
+    console.log("API Response:", response.data);
 
-    const data ={
-    "pagination": {
-        "index": 1,
-        "rowCount": -1,
-        "searchObj": null,
-        "sortingObj": null
-    }
-}
-    const response = yield call(containerApi.put, ACTIVE_URL);
-    yield put(actions.fetchContainerSuccess(response.data, datas,data));
+    // Make sure we pass an array to the reducer
+    const itemsArray = Array.isArray(response.data?.data?.tableData) 
+      ? response.data.data.tableData
+      : []; // adjust according to API structure
+
+    yield put(actions.fetchContainerSuccess({data:{tableData:itemsArray}}));
   } catch (error) {
     yield put(actions.fetchContainerFailure(error.response?.data || error.message));
   }
 }
 
+
 // Add container
 function* addContainer(action) {
   try {
-    const response = yield call(containerApi.post, ADD_URL, action.payload);
+    const response = yield call(containerApi.get, ADD_URL, action.payload);
     yield put(actions.addContainerSuccess(response.data));
   } catch (error) {
     yield put(actions.addContainerFailure(error.response?.data || error.message));
