@@ -35,8 +35,9 @@ export const verifyOtpApi = async (otpData) => {
 
   
  export const containerApi = axios.create({
-   base_URL:"https://hastin-container.com/staging",
+   base_URL:"https://hastin-container.com/staging/",
   headers: {
+    
     "Content-Type": "application/json",
     "Aid":"86f15c81-66d3-4237-bb29-6c4e7a9daacf",
   },

@@ -39,10 +39,10 @@ const LoginPage = () => {
       if (loginUser.fulfilled.match(result)) {
         setToastMsg("login Successfully!")
         setToastType("success")
-        setTimeout(()=>{
+        setTimeout(() => {
           navigate("/verify")
 
-        },5000)
+        }, 5000)
       } else {
         const apiError = result.payload || result.error;
         setToastMsg(apiError.message || "Login failed!");
@@ -54,6 +54,18 @@ const LoginPage = () => {
       setToastType("error");
     }
   };
+
+  const inputstyle = {
+    width: "90%",
+    height: "30px",
+    border: "2px solid #ccc",
+    outline: "none",
+    borderRadius: "10px",
+    background: "#f2f2f2",
+    paddingInline: "10px",
+    alignSelf: "center",
+  }
+  
 
   return (
     <div
@@ -73,15 +85,7 @@ const LoginPage = () => {
       >
         <label>UserName</label>
         <input
-          style={{
-            width: "90%",
-            height: "30px",
-            border: "2px solid #ccc",
-            outline: "none",
-            borderRadius: "10px",
-            paddingInline: "10px",
-            alignSelf: "center",
-          }}
+          style={inputstyle}
           type="text"
           placeholder="Username"
           value={userName}
@@ -94,15 +98,7 @@ const LoginPage = () => {
 
         <label>Password</label>
         <input
-          style={{
-            width: "90%",
-            height: "30px",
-            border: "2px solid #ccc",
-            outline: "none",
-            borderRadius: "10px",
-            paddingInline: "10px",
-            alignSelf: "center",
-          }}
+          style={inputstyle}
           type="password"
           placeholder="Password"
           value={password}

@@ -45,7 +45,7 @@ function* fetchContainer(action) {
 // Add container
 function* addContainer(action) {
   try {
-    const response = yield call(containerApi.get, ADD_URL, action.payload);
+    const response = yield call(containerApi.post, ADD_URL, action.payload);
     yield put(actions.addContainerSuccess(response.data));
   } catch (error) {
     yield put(actions.addContainerFailure(error.response?.data || error.message));

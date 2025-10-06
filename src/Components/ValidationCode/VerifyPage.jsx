@@ -3,12 +3,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { verifyOtp } from "../../AuthSlice";
 import "./otp.css"
+import Toasting from "../Toast/Toasting";
 
 export default function VerifyPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { accessCode, error, otpMessage } = useSelector((state) => state.auth);
+
+  const [toastmsg,setToastmsg]=useState("");
+  const[toasttype,setToastType]=useState("");
+
 
   const [inputOtp, setInputOtp] = useState("");
   const [timeLeft, setTimeLeft] = useState(
@@ -36,20 +41,30 @@ export default function VerifyPage() {
     }
   }, [accessCode]);
 
-  const handleVerify = async () => {
-    try {
-      const result = await dispatch(
-        verifyOtp({ accessCode: inputOtp }) // payload to backend
-      ).unwrap();
-        alert("OTP Verified Successfully!");
-        navigate("/home");
-      
-    } catch (err) {
-      console.error("OTP Verification Failed:", err);
-      alert("Invalid OTP. Try again.");
-    }
-  };
+const handleVerify = async () => {
+  if (!inputOtp) {
+    setToastmsg("Please enter OTP");
+    setToastType("error");
+    return;
+  }
 
+  try {
+    const result = await dispatch(verifyOtp({ accessCode: inputOtp })).unwrap();
+
+    console.log("VerifyOtp result:", result);
+
+    // ✅ check backend field correctly
+    if (result?.isValidAccessCode) {
+      setToastmsg(result.message || "OTP Verified Successfully!");
+      setToastType("success");
+      navigate("/home/dashboard"); // go directly to Dashboard
+    }
+  } catch (err) {
+    console.error("OTP Verification Failed:", err);
+    setToastmsg(err.message || "Invalid OTP. Try again.");
+    setToastType("error");
+  }
+};
 
   return (
     <div className="container">
@@ -85,6 +100,11 @@ export default function VerifyPage() {
           Verify
         </button>
 
+        <Toasting
+        message={toastmsg}
+        type={toasttype}
+        onClose={()=>setToastmsg("")}
+        />
         {error && <p style={{ color: "red" }}>{error.message || error}</p>}
         {otpMessage && <p style={{ color: "green" }}>{otpMessage}</p>}
       </div>

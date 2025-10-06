@@ -18,10 +18,6 @@ const InventoryPage = () => {
     dispatch(fetchContainerRequest());
   }, [dispatch]);
 
-
-
-
-
   return (
     <div className="inventory-container">
       <h2 className="inventory-title">Container</h2>
@@ -56,38 +52,55 @@ const InventoryPage = () => {
             </tr>
           </thead>
 
-         <tbody>
-  {items.length > 0 ? (
-    items.map((inv) => (
-      <tr key={`${inv.containerNo}-${inv.productType}`}>
-        <td>{inv.containerNo}</td>
-        <td>{inv.containerType}</td>
-        <td>{inv.productType}</td>
-        <td>{inv.currentLocation}</td>
-        <td>{inv.principal}</td>
-        <td>{inv.maxGrossWeight}</td>
-        <td>{inv.grade}</td>
-        <td>{inv.note}</td>
-        <td>{inv.onHireDate}</td>
-        <td>{inv.onHireLocation}</td>
-        <td>
-          <button onClick={() => { setEditItem(inv); setShowForm(true); }}>Edit</button>
-          <button onClick={() => dispatch(deleteContainerRequest(inv.id))}>Delete</button>
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td colSpan="11" style={{ textAlign: "center" }}>No containers found</td>
-    </tr>
-  )}
-</tbody>
-
+          <tbody>
+            {items.length > 0 ? (
+              items.map((inv) => (
+                <tr key={inv.id}>
+                  <td>{inv.containerNo}</td>
+                  <td>{inv.containerType}</td>
+                  <td>{inv.productType}</td>
+                  <td>{inv.currentLocation}</td>
+                  <td>{inv.principal}</td>
+                  <td>{inv.maxGrossWeight}</td>
+                  <td>{inv.grade}</td>
+                  <td>{inv.note}</td>
+                  <td>{inv.onHireDate}</td>
+                  <td>{inv.onHireLocation}</td>
+                  <td>
+                    <button
+                      onClick={() => {
+                        setEditItem(inv);
+                        setShowForm(true);
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() =>
+                        dispatch(deleteContainerRequest(inv.id))
+                      }
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="11" style={{ textAlign: "center" }}>
+                  No containers found
+                </td>
+              </tr>
+            )}
+          </tbody>
         </table>
       </div>
 
       {showForm && (
-        <ContainerForm onClose={() => setShowForm(false)} editItem={editItem} />
+        <ContainerForm
+          onClose={() => setShowForm(false)}
+          editItem={editItem}
+        />
       )}
     </div>
   );

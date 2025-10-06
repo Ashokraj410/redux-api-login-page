@@ -4,7 +4,9 @@
 .inventory-container {
   padding: 1rem;
 }
-
+body{
+  width: 100%;
+}
 /* Title styling */
 .inventory-title {
   font-size: 1.25rem;
@@ -30,10 +32,11 @@
 .table-container {
   margin-top: 1rem;
   overflow-x: auto;
+  justify-items: center;
 }
 
 table {
-  width: 100%;
+  width: 97%;
   border-collapse: collapse;
 }
 
@@ -52,28 +55,4 @@ tr:nth-child(even) {
   background-color: #f7fafc;
 }
 
-/* Action buttons styling */
-.edit-btn,
-.delete-btn {
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.375rem;
-  cursor: pointer;
-}
 
-.edit-btn {
-  background-color: #3182ce;
-  color: white;
-}
-
-.edit-btn:hover {
-  background-color: #2b6cb0;
-}
-
-.delete-btn {
-  background-color: #e53e3e;
-  color: white;
-}
-
-.delete-btn:hover {
-  background-color: #c53030;
-}

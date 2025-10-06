@@ -14,6 +14,7 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+/*
 // Verify OTP
 export const verifyOtp = createAsyncThunk(
   "auth/verifyOtp",
@@ -26,6 +27,26 @@ export const verifyOtp = createAsyncThunk(
     }
   }
 );
+*/
+export const verifyOtp = createAsyncThunk(
+  "auth/verifyOtp",
+  async (otpData, { rejectWithValue }) => {
+    try {
+      const response = await verifyOtpApi(otpData);
+
+      const data = response.data;  // ✅ extract data
+
+      if (!data.isValidAccessCode) {
+        return rejectWithValue(data.message || "Invalid OTP");
+      }
+
+      return data; // only return when OTP valid
+    } catch (err) {
+      return rejectWithValue(err.response?.data || { message: err.message });
+    }
+  }
+);
+
 
 
 
@@ -82,13 +103,15 @@ const authSlice = createSlice({
       })
       .addCase(verifyOtp.fulfilled, (state, action) => {
         state.loading = false;
-        state.otpMessage = action.payload.message || "OTP Verified!";
-        state.accessCode = null; // clear OTP after success
+        state.accessCode = action.payload.accessCode || null;
+        state.otpMessage = action.payload.message || "OTP verified successfully!";
+        state.error = null;
       })
-      .addCase(verifyOtp.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
+      
+  .addCase(verifyOtp.rejected, (state, action) => {
+    state.loading = false;
+    state.error = action.payload;
+  })
 
       
   },
