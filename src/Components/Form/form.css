@@ -1,100 +1,171 @@
+/* ===== Modal Backdrop ===== */
 .modal-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.45);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 1200;
 }
 
-.modal-container {
+/* ===== Modal Container ===== */
+.modal-backdrop .modal-container {
   background: #fff;
   width: 90%;
   max-width: 800px;
   max-height: 90vh;
   overflow-y: auto;
-  padding: 20px;
-  border-radius: 12px;
-}
-.modal-title{
-  text-align: center;
-}
-form {
-  margin-top: 15px;
+  padding: 24px 28px;
+  border-radius: 14px;
   display: flex;
-  justify-content: space-around;
-  gap: 30px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.3s ease-in-out;
 }
 
-.form-group {
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ===== Title ===== */
+.modal-backdrop .modal-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* ===== Form Layout ===== */
+.modal-backdrop .con-frm {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 25px;
+}
+
+.modal-backdrop .first,
+.modal-backdrop .second {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  flex: 1;
+}
+
+/* ===== Form Groups ===== */
+.modal-backdrop .form-group {
   position: relative;
   width: 100%;
 }
 
-.first, .second {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  flex: 1;
-}
-
-input, select, textarea {
+/* ===== Inputs / Selects / Textareas ===== */
+.modal-backdrop input,
+.modal-backdrop select,
+.modal-backdrop textarea {
   width: 100%;
-  padding: 14px 12px;
+  padding: 12px 14px;
   border: 2px solid #ccc;
-  border-radius: 10px;
+  border-radius: 8px;
   outline: none;
-  cursor: pointer;
-  background: transparent;
+  font-size: 15px;
+  background-color: transparent;
+  transition: border-color 0.25s, box-shadow 0.25s;
 }
 
-label {
+.modal-backdrop input:focus,
+.modal-backdrop select:focus,
+.modal-backdrop textarea:focus {
+  border-color: #6f42c1; /* Purple accent */
+  box-shadow: 0 0 5px rgba(111, 66, 193, 0.25);
+}
+
+/* ===== Select Options ===== */
+.modal-backdrop select option {
+  background-color: #fff;
+  color: #333;
+  padding: 8px 10px;
+}
+
+/* ===== Floating Labels ===== */
+.modal-backdrop label {
   position: absolute;
-  left: 12px;
-  top: 14px;
-  pointer-events: none;
-  transition: 0.3s ease all;
+  left: 14px;
+  top: 13px;
   background: #fff;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-  border: 2px solid #4a90e2;
-}
-
-input:focus+label,
-input:not(:placeholder-shown)+label,
-select:focus+label,
-textarea:focus+label {
-  top: -10px;
-  color: #4a90e2;
-  font-size: 12px;
   padding: 0 4px;
+  font-size: 14px;
+  color: #666;
+  pointer-events: none;
+  transition: all 0.3s ease;
 }
-.button-group{
-  align-self: center;
-  display: flex;
-  gap: 20px;
-}
-.button-group button{
-  padding: 7px 20px;
-  border: 2px solid #ccc;
-  border-radius: 7px;
-  cursor: pointer;
 
-}
-.form-group select:placeholder-shown + label {
-  visibility: hidden;
-}
-.form-group select:focus + label,
-.form-group select:not([value=""]) + label {
-  top: -8px;
+.modal-backdrop input:focus + label,
+.modal-backdrop input:not(:placeholder-shown) + label,
+.modal-backdrop select:focus + label,
+.modal-backdrop textarea:focus + label,
+.modal-backdrop select:not([value=""]) + label {
+  top: -9px;
   font-size: 12px;
-  color: #555;
+  color: #6f42c1;
+}
+
+/* ===== Button Group ===== */
+.modal-backdrop .button-group {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 25px;
+}
+
+/* ===== Buttons ===== */
+.modal-backdrop .button-group button {
+  padding: 10px 22px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Cancel Button */
+.modal-backdrop .button-group .cancel-btn {
+  background: #adb5bd;
+  color: white;
+}
+
+.modal-backdrop .button-group .cancel-btn:hover {
+  background: #868e96;
+}
+
+/* Insert / Submit Button */
+.modal-backdrop .button-group .submit-btn {
+  background: #6f42c1; /* Purple */
+  color: #fff;
+}
+
+.modal-backdrop .button-group .submit-btn:hover {
+  background: #5a32a3;
+}
+
+/* ===== Autofill Fix ===== */
+.modal-backdrop input:-webkit-autofill,
+.modal-backdrop input:-webkit-autofill:hover,
+.modal-backdrop input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
+  -webkit-text-fill-color: #000 !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* ===== Scrollbar Removed ===== */
+.modal-backdrop .modal-container::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }

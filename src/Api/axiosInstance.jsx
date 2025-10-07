@@ -34,8 +34,8 @@ export const verifyOtpApi = async (otpData) => {
 };
 
   
- export const containerApi = axios.create({
-   base_URL:"https://hastin-container.com/staging/",
+ {/*export const containerApi = axios.create({
+   baseURL:"https://hastin-container.com/staging/",
   headers: {
     
     "Content-Type": "application/json",
@@ -50,6 +50,49 @@ containerApi.interceptors.request.use((config) => {
     config.headers["Authorization"] = `BslogiKey ${token}`; // or BslogiKey if needed
   }
   return config;
+});*/}
+
+
+{/*export const containerApi = axios.create({
+  baseURL: "https://hastin-container.com/staging/",
+  headers: {
+    "Content-Type": "application/json",
+    "aid": "86f15c81-66d3-4237-bb29-6c4e7a9daacf",
+  },
 });
 
+containerApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers["Authorization"] = `BslogiKey ${token}`;
+  }
+  return config;
+});
 
+containerApi.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("API error:", error.response?.data || error.message);
+    return Promise.reject(error);
+  }
+);*/}
+
+
+export const containerApi = axios.create({
+  baseURL: "https://hastin-container.com/staging/",
+  headers: {
+    "Content-Type": "application/json",
+    "aid": "86f15c81-66d3-4237-bb29-6c4e7a9daacf",
+  },
+});
+
+containerApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) config.headers["Authorization"] = `BslogiKey ${token}`;
+  return config;
+});
+
+containerApi.interceptors.response.use(
+  (response) => response,
+  (error) => Promise.reject(error)
+);

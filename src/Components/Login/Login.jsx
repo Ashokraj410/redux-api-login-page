@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../AuthSlice";
 import { useNavigate } from "react-router-dom";
 import Toasting from "../Toast/Toasting";
+import "./log.css"
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -87,6 +88,7 @@ const LoginPage = () => {
         <input
           style={inputstyle}
           type="text"
+          name="Username"
           placeholder="Username"
           value={userName}
           onChange={(e) => {
@@ -100,6 +102,7 @@ const LoginPage = () => {
         <input
           style={inputstyle}
           type="password"
+          name="password"
           placeholder="Password"
           value={password}
           onChange={(e) => {
