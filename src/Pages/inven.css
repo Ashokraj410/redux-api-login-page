@@ -25,7 +25,8 @@ body{
 }
 
 .add-container-btn:hover {
-  background-color: #2f855a;
+  background-color:transparent;
+  color: black;
 }
 
 /* Table styling */
@@ -38,14 +39,21 @@ body{
 table {
   width: 97%;
   border-collapse: collapse;
-  border: 2px solid #ccc;
+  border: 1px solid #ccc;
+
 }
 
-th,
+
 td {
   padding: 0.75rem;
   text-align: left;
+  text-align: center;
   
+}
+th{
+  padding: 0.75rem;
+  text-align: center;
+
 }
 
 th {
@@ -56,4 +64,15 @@ tr:nth-child(even) {
   background-color: #f7fafc;
 }
 
-
+table button{
+  padding: 4px 23px;
+  cursor: pointer;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+}
+table button:hover{
+  background-color: skyblue;
+  color: #f2f2f2;
+  border: none;
+  outline: none;
+}

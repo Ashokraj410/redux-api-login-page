@@ -10,18 +10,21 @@ import "./inven.css";
 
 const InventoryPage = () => {
   const dispatch = useDispatch();
-  const { items = [], loading, error } = useSelector((state) => state.container);
+  const { items = [], loading, error } = useSelector(
+    (state) => state.container
+  );
 
   const [showForm, setShowForm] = useState(false);
   const [editItem, setEditItem] = useState(null);
 
+  // Fetch containers on mount
   useEffect(() => {
     dispatch(fetchContainerRequest());
   }, [dispatch]);
 
   const handleFormSubmit = (formData) => {
     if (editItem) {
-      dispatch(updateContainerRequest({ ...editItem, ...formData }));
+      dispatch(updateContainerRequest({ id: editItem.id, ...formData }));
     } else {
       dispatch(addContainerRequest(formData));
     }
@@ -30,7 +33,8 @@ const InventoryPage = () => {
 
   return (
     <div className="inventory-container">
-      <h2 className="inventory-title">Container</h2>
+      <h2 className="inventory-title">Container Details</h2>
+
       <button
         onClick={() => {
           setEditItem(null);
@@ -45,7 +49,7 @@ const InventoryPage = () => {
       {error && <p className="text-red-500">{error}</p>}
 
       <div className="table-container">
-        <table>
+        <table className="inventory-table">
           <thead>
             <tr>
               <th>Container No</th>
@@ -60,6 +64,7 @@ const InventoryPage = () => {
               <th>Actions</th>
             </tr>
           </thead>
+
           <tbody>
             {items.length > 0 ? (
               items.map((inv) => (
@@ -75,6 +80,7 @@ const InventoryPage = () => {
                   <td>{inv.yom}</td>
                   <td>
                     <button
+                      className="edit-btn"
                       onClick={() => {
                         setEditItem(inv);
                         setShowForm(true);
